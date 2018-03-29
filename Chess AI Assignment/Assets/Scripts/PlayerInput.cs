@@ -5,7 +5,9 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour
 {
     [SerializeField] private bool isSelecting = false;
-    [SerializeField] private Node selectedNode;
+    [SerializeField] private Node previousNode;
+
+    [SerializeField] private int playerTurn = 1;
 
     void Start()
     {
@@ -14,6 +16,10 @@ public class PlayerInput : MonoBehaviour
     
     void Update()
     {
+        if (playerTurn > 2)
+        {
+            playerTurn = 1;
+        }
         UpdateSelection();
     }
     
@@ -33,42 +39,111 @@ public class PlayerInput : MonoBehaviour
             if (Physics.Raycast(ray, out hit) && hit.transform.CompareTag("Node"))
             {
                 Debug.Log("You just clicked on this: " + hit.transform);
-                
+
                 Node node = hit.transform.GetComponent<Node>();
-                if (!isSelecting)
+                if (playerTurn == 1)
                 {
-                    if (node.GetNodeType() == Node.NodeType.NONE)
+                    if (!isSelecting)
                     {
-                        return;
+                        if (node.GetNodeTeam() == Node.NodeTeam.WHITE)
+                        {
+                            if (node.GetNodeType() != Node.NodeType.NONE)
+                            {
+                                previousNode = node;
+                            }
+                            if (node.GetNodeType() == Node.NodeType.PAWN)
+                            {
+                                node.CheckPawnMovement();
+                            }
+                            if (node.GetNodeType() == Node.NodeType.BISHOP)
+                            {
+                                node.CheckBishopMovement();
+                            }
+                            if (node.GetNodeType() == Node.NodeType.KNIGHT)
+                            {
+                                node.CheckKnightMovement();
+                            }
+                            node.PaintSelected();
+                            isSelecting = true;
+                        }
                     }
-                    if (node.GetNodeType() == Node.NodeType.PAWN)
+                    //The phase where player chooses the node to move to.
+                    else if (isSelecting)
                     {
-                        selectedNode = node;
-                        node.CheckPawnMovement();
-                        isSelecting = true;
+                        //Check for the correct node
+                        if (previousNode.GetNodesToCheck().Contains(node))
+                        {
+                            isSelecting = false;
+
+                            node.SetNodeType((int)previousNode.GetNodeType());
+                            node.SetNodeTeam((int)previousNode.GetNodeTeam());
+
+                            node.UpdateNode();
+                            node.UpdateMoveCounter(previousNode.GetMoveCounter + 1);
+
+                            //Reset the previous node.
+                            previousNode.CheckEmpty();
+                            previousNode.GetNodesToCheck().Clear();
+
+                            playerTurn++;
+                        }
                     }
                 }
-
-                if (isSelecting)
+                else if (playerTurn == 2)
                 {
-                    for (int i = 0; i < node.GetNodesToCheck().Count; ++i)
+                    if (!isSelecting)
                     {
-                        //Count from the list of available moves.
+                        if (node.GetNodeTeam() == Node.NodeTeam.BLACK)
+                        {
+                            if (node.GetNodeType() != Node.NodeType.NONE)
+                            {
+                                previousNode = node;
+                            }
+                            if (node.GetNodeType() == Node.NodeType.PAWN)
+                            {
+                                node.CheckPawnMovement();
+                            }
+                            if (node.GetNodeType() == Node.NodeType.BISHOP)
+                            {
+                                node.CheckBishopMovement();
+                            }
+                            if (node.GetNodeType() == Node.NodeType.KNIGHT)
+                            {
+                                node.CheckKnightMovement();
+                            }
+                            node.PaintSelected();
+                            isSelecting = true;
+                        }
                     }
-
-                    if (node.GetNodeType() == Node.NodeType.NONE)
+                    //The phase where player chooses the node to move to.
+                    else if (isSelecting)
                     {
-                        node.SetNodeType((int)selectedNode.GetNodeType());
-                        node.SetNodeTeam((int)selectedNode.GetNodeTeam());
+                        //Check for the correct node
+                        if (previousNode.GetNodesToCheck().Contains(node))
+                        {
+                            isSelecting = false;
 
-                        //Reset the previous node.
-                        selectedNode.CheckEmpty();
+                            node.SetNodeType((int)previousNode.GetNodeType());
+                            node.SetNodeTeam((int)previousNode.GetNodeTeam());
 
-                        isSelecting = false;
-                        node.UpdateNode();
+                            node.UpdateNode();
+                            node.UpdateMoveCounter(previousNode.GetMoveCounter + 1);
+
+                            //Reset the previous node.
+                            previousNode.CheckEmpty();
+                            previousNode.GetNodesToCheck().Clear();
+
+                            playerTurn++;
+                        }
                     }
                 }
             }
+        }
+        else if (Input.GetButtonDown("Fire2"))
+        {
+            isSelecting = false;
+
+            previousNode.UnPaintMovables();
         }
     }
 

@@ -29,9 +29,9 @@ public class BoardManager : MonoBehaviour
     private void DrawChessBoard()
     {
         int nameCounter = 0;
-        for (int i = 1; i <= heightLine; ++i)
+        for (int i = 0; i < heightLine; ++i)
         {
-            for (int j = 1; j <= widthLine; ++j)
+            for (int j = 0; j < widthLine; ++j)
             {
                 GameObject GO = Instantiate(nodePrefab, new Vector2(j + offSet.y, i + offSet.x), Quaternion.identity, transform);
                 SpriteRenderer sRend = GO.GetComponent<SpriteRenderer>();
@@ -63,44 +63,44 @@ public class BoardManager : MonoBehaviour
                 //Setting chess piece type based on counter position.
 
                 //Team
-                if (i == 1 || i == 2)
+                if (i == 0 || i == 1)
                 {
                     node.SetNodeTeam(1);
                 }
-                else if (i == 7 || i == 8)
+                else if (i == 6 || i == 7)
                 {
                     node.SetNodeTeam(2);
                 }
 
                 //Pawn
-                if (i == 2 || i == 7)
+                if (i == 1 || i == 6)
                 {
                     node.SetNodeType(1);
                 }
 
-                if (i == 1 || i == 8)
+                if (i == 0 || i == 7)
                 {
-                    if (j == 3 || j == 6)
+                    if (j == 2 || j == 5)
                     {
                         //Bishop
                         node.SetNodeType(2);
                     }
-                    else if (j == 2 || j == 7)
+                    else if (j == 1 || j == 6)
                     {
                         //Knight
                         node.SetNodeType(3);
                     }
-                    else if (j == 1 || j == 8)
+                    else if (j == 0 || j == 7)
                     {
                         //Rook
                         node.SetNodeType(4);
                     }
-                    else if (j == 4)
+                    else if (j == 3)
                     {
                         //Queen
                         node.SetNodeType(5);
                     }
-                    else if (j == 5)
+                    else if (j == 4)
                     {
                         //King
                         node.SetNodeType(6);
