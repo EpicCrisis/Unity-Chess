@@ -134,18 +134,32 @@ public class Node : MonoBehaviour
 
         BoardManager board = GetComponentInParent<BoardManager>();
         List<Node> nodeList = board.GetNodeList();
-
+        
         if (nodeTeam == NodeTeam.WHITE)
         {
+            int moveLimit = 0;
+
+            if (moveCounter < 1)
+            {
+                moveLimit = (int)currentPos.y + 2;
+            }
+            else
+            {
+                moveLimit = (int)currentPos.y + 1;
+            }
+
             int i;
             int j;
 
+            //========================================================
+            // Checking Y+ route, move forward
+            //========================================================
             i = (int)currentPos.x;
             j = (int)currentPos.y;
-            
+
             j++;
 
-            while (j <= (int)currentPos.y + 2)
+            while (j <= moveLimit && j < 8)
             {
                 Node node = nodeList[j * 8 + i];
 
@@ -157,20 +171,20 @@ public class Node : MonoBehaviour
                 {
                     break;
                 }
-
-                if (moveCounter < 1)
-                {
-                    j++;
-                }
+                
+                j++;
             }
-
+            
+            //========================================================
+            // Checking Y+X+ route, attack up right diagonal
+            //========================================================
             i = (int)currentPos.x;
             j = (int)currentPos.y;
 
             i++;
             j++;
 
-            while (i <= (int)currentPos.x + 1 && j <= (int)currentPos.y + 2)
+            while (i <= (int)currentPos.x + 1 && j <= (int)currentPos.y + 1 && i < 8 && j < 8)
             {
                 Node node = nodeList[j * 8 + i];
 
@@ -183,13 +197,16 @@ public class Node : MonoBehaviour
                 j++;
             }
 
+            //========================================================
+            // Checking Y+X- route, attack up left diagonal
+            //========================================================
             i = (int)currentPos.x;
             j = (int)currentPos.y;
 
             i--;
             j++;
 
-            while (i >= 0 && j <= (int)currentPos.y + 2)
+            while (i >= (int)currentPos.x - 1 && j <= (int)currentPos.y + 1 && i >= 0 && j < 8)
             {
                 Node node = nodeList[j * 8 + i];
 
@@ -204,15 +221,29 @@ public class Node : MonoBehaviour
         }
         else if (nodeTeam == NodeTeam.BLACK)
         {
+            int moveLimit = 0;
+
+            if (moveCounter < 1)
+            {
+                moveLimit = (int)currentPos.y - 2;
+            }
+            else
+            {
+                moveLimit = (int)currentPos.y - 1;
+            }
+
             int i;
             int j;
 
+            //========================================================
+            // Checking Y- route, move downward
+            //========================================================
             i = (int)currentPos.x;
             j = (int)currentPos.y;
 
             j--;
 
-            while (j >= (int)currentPos.y - 2)
+            while (j >= moveLimit && j >= 0)
             {
                 Node node = nodeList[j * 8 + i];
 
@@ -224,22 +255,20 @@ public class Node : MonoBehaviour
                 {
                     break;
                 }
-
-                // Will have to fix the counter not counting when moveCounter is more than 0.
-                // Add a condition where it will move twice when moveCounter is 0.
-                if (moveCounter < 1)
-                {
-                    j--;
-                }
+                
+                j--;
             }
 
+            //========================================================
+            // Checking Y-X+ route, check down right diagonal.
+            //========================================================
             i = (int)currentPos.x;
             j = (int)currentPos.y;
 
             i++;
             j--;
 
-            while (i <= (int)currentPos.x + 1 && j >= (int)currentPos.y - 2)
+            while (i <= (int)currentPos.x + 1 && j >= (int)currentPos.y - 1 && i < 8 && j >= 0)
             {
                 Node node = nodeList[j * 8 + i];
 
@@ -252,13 +281,16 @@ public class Node : MonoBehaviour
                 j--;
             }
 
+            //========================================================
+            // Checking Y-X- route, check down left diagonal
+            //========================================================
             i = (int)currentPos.x;
             j = (int)currentPos.y;
 
             i--;
             j--;
 
-            while (i >= (int)currentPos.x - 1 && j >= (int)currentPos.y - 2)
+            while (i >= (int)currentPos.x - 1 && j >= (int)currentPos.y - 1 && i >= 0 && j >= 0)
             {
                 Node node = nodeList[j * 8 + i];
 
@@ -271,6 +303,7 @@ public class Node : MonoBehaviour
                 j--;
             }
         }
+        PaintMovables();
 
         //=====================================================
         // ARCHIVED CODE
@@ -306,7 +339,7 @@ public class Node : MonoBehaviour
                     }
                 }
                 // Checks whether the pawn has made the first move.
-                if (moveCounter < 1)
+                if (moveCounter <= 0)
                 {
                     // If it hasn't, it can choose to take two steps.
                     if (node.currentPos.x == currentPos.x && node.currentPos.y == currentPos.y + 2)
@@ -328,7 +361,7 @@ public class Node : MonoBehaviour
 
                 //Checking for attackables, pawn only.
                 if (node.currentPos.x == currentPos.x - 1 && node.currentPos.y == currentPos.y - 1 ||
-                node.currentPos.x == currentPos.x + 1 && node.currentPos.y == currentPos.y - 1)
+                    node.currentPos.x == currentPos.x + 1 && node.currentPos.y == currentPos.y - 1)
                 {
                     if (node.nodeTeam == NodeTeam.WHITE)
                     {
@@ -348,7 +381,7 @@ public class Node : MonoBehaviour
                     }
                 }
                 // Checks whether the pawn has made the first move.
-                if (moveCounter < 1)
+                if (moveCounter <= 0)
                 {
                     if (node.currentPos.x == currentPos.x && node.currentPos.y == currentPos.y - 2)
                     {
@@ -361,8 +394,6 @@ public class Node : MonoBehaviour
             }
         }
         */
-
-        PaintMovables();
     }
 
     public void CheckBishop()
@@ -693,7 +724,6 @@ public class Node : MonoBehaviour
                 j--;
             }
         }
-
         PaintMovables();
     }
 
@@ -768,7 +798,6 @@ public class Node : MonoBehaviour
                 }
             }
         }
-
         PaintMovables();
     }
 
@@ -787,6 +816,306 @@ public class Node : MonoBehaviour
         }
     }
 
+    public void CheckRookMovement()
+    {
+        nodesToCheck.Clear();
+
+        BoardManager board = GetComponentInParent<BoardManager>();
+        List<Node> nodeList = board.GetNodeList();
+
+        if (nodeTeam == NodeTeam.WHITE)
+        {
+            int i;
+            int j;
+
+            //==================================================
+            // Checking "X+" Horizontal Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i++;
+
+            // Loop stops when i is out of range
+            while (i < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                i++;
+            }
+
+            //==================================================
+            // Checking "X-" Horizontal Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i--;
+
+            // Loop stops when i is out of range
+            while (i >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                i--;
+            }
+
+            //==================================================
+            // Checking "Y+" Vertical Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            j++;
+            
+            // Loop stops when i is out of range
+            while (j < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                j++;
+            }
+
+            //==================================================
+            // Checking "Y-" Vertical Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            j--;
+
+            // Loop stops when i is out of range
+            while (j >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                j--;
+            }
+        }
+        else if (nodeTeam == NodeTeam.BLACK)
+        {
+            int i;
+            int j;
+
+            //==================================================
+            // Checking "X+" Horizontal Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i++;
+
+            // Loop stops when i is out of range
+            while (i < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                i++;
+            }
+
+            //==================================================
+            // Checking "X-" Horizontal Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i--;
+
+            // Loop stops when i is out of range
+            while (i >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                i--;
+            }
+
+            //==================================================
+            // Checking "Y+" Vertical Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            j++;
+
+            // Loop stops when i is out of range
+            while (j < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                j++;
+            }
+
+            //==================================================
+            // Checking "Y-" Vertical Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            j--;
+
+            // Loop stops when i is out of range
+            while (j >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                j--;
+            }
+        }
+        PaintMovables();
+    }
+
     public void CheckQueen()
     {
         currentPrefab = Instantiate(queenPrefab, transform.position, Quaternion.identity, transform);
@@ -802,6 +1131,602 @@ public class Node : MonoBehaviour
         }
     }
 
+    public void CheckQueenMovement()
+    {
+        nodesToCheck.Clear();
+
+        BoardManager board = GetComponentInParent<BoardManager>();
+        List<Node> nodeList = board.GetNodeList();
+
+        if (nodeTeam == NodeTeam.WHITE)
+        {
+            int i;
+            int j;
+
+            //==================================================
+            // Checking "X+ Y+" Diagonal Route
+            //==================================================
+
+            // Resets i and j back to bishop's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i++;
+            j++;
+
+            // Loop stops when i or j is out of range
+            while (i < 8 && j < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                i++;
+                j++;
+            }
+
+            //==================================================
+            // Checking "X- Y+" Diagonal Route
+            //==================================================
+
+            // Resets i and j back to bishop's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i++;
+            j--;
+
+            // Loop stops when i or j is out of range
+            while (i < 8 && j >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                i++;
+                j--;
+            }
+
+            //==================================================
+            // Checking "X+ Y-" Diagonal Route
+            //==================================================
+
+            // Resets i and j back to bishop's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i--;
+            j++;
+
+            // Loop stops when i or j is out of range
+            while (i >= 0 && j < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                i--;
+                j++;
+            }
+
+            //==================================================
+            // Checking "X- Y-" Diagonal Route
+            //==================================================
+
+            // Resets i and j back to bishop's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i--;
+            j--;
+
+            // Loop stops when i or j is out of range
+            while (i >= 0 && j >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                i--;
+                j--;
+            }
+
+            //==================================================
+            // Checking "X+" Horizontal Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i++;
+
+            // Loop stops when i is out of range
+            while (i < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                i++;
+            }
+
+            //==================================================
+            // Checking "X-" Horizontal Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i--;
+
+            // Loop stops when i is out of range
+            while (i >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                i--;
+            }
+
+            //==================================================
+            // Checking "Y+" Vertical Route
+            //==================================================
+
+            // Resets i and j back to queen's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            j++;
+
+            // Loop stops when i is out of range
+            while (j < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                j++;
+            }
+
+            //==================================================
+            // Checking "Y-" Vertical Route
+            //==================================================
+
+            // Resets i and j back to queen's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            j--;
+
+            // Loop stops when i is out of range
+            while (j >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    break;
+                }
+
+                // Increment
+                j--;
+            }
+        }
+        else if (nodeTeam == NodeTeam.BLACK)
+        {
+            int i;
+            int j;
+
+            //==================================================
+            // Checking "X+ Y+" Diagonal Route
+            //==================================================
+
+            // Resets i and j back to bishop's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i++;
+            j++;
+
+            // Loop stops when i or j is out of range
+            while (i < 8 && j < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                i++;
+                j++;
+            }
+
+            //==================================================
+            // Checking "X- Y+" Diagonal Route
+            //==================================================
+
+            // Resets i and j back to bishop's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i++;
+            j--;
+
+            // Loop stops when i or j is out of range
+            while (i < 8 && j >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                i++;
+                j--;
+            }
+
+            //==================================================
+            // Checking "X+ Y-" Diagonal Route
+            //==================================================
+
+            // Resets i and j back to bishop's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i--;
+            j++;
+
+            // Loop stops when i or j is out of range
+            while (i >= 0 && j < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                i--;
+                j++;
+            }
+
+            //==================================================
+            // Checking "X- Y-" Diagonal Route
+            //==================================================
+
+            // Resets i and j back to bishop's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i--;
+            j--;
+
+            // Loop stops when i or j is out of range
+            while (i >= 0 && j >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                i--;
+                j--;
+            }
+
+            //==================================================
+            // Checking "X+" Horizontal Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i++;
+
+            // Loop stops when i is out of range
+            while (i < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                i++;
+            }
+
+            //==================================================
+            // Checking "X-" Horizontal Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            i--;
+
+            // Loop stops when i is out of range
+            while (i >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                i--;
+            }
+
+            //==================================================
+            // Checking "Y+" Vertical Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            j++;
+
+            // Loop stops when i is out of range
+            while (j < 8)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                j++;
+            }
+
+            //==================================================
+            // Checking "Y-" Vertical Route
+            //==================================================
+
+            // Resets i and j back to rook's position
+            i = (int)currentPos.x;
+            j = (int)currentPos.y;
+
+            // Increment
+            j--;
+
+            // Loop stops when i is out of range
+            while (j >= 0)
+            {
+                // Get node at the position (i, j)
+                Node node = nodeList[j * 8 + i];
+
+                if (node.nodeTeam == NodeTeam.NONE)
+                {
+                    nodesToCheck.Add(node);
+                }
+                else if (node.nodeTeam == NodeTeam.WHITE)
+                {
+                    nodesToCheck.Add(node);
+                    break;
+                }
+                else if (node.nodeTeam == NodeTeam.BLACK)
+                {
+                    break;
+                }
+
+                // Increment
+                j--;
+            }
+        }
+        PaintMovables();
+    }
+
     public void CheckKing()
     {
         currentPrefab = Instantiate(kingPrefab, transform.position, Quaternion.identity, transform);
@@ -815,6 +1740,65 @@ public class Node : MonoBehaviour
         {
             sRend.color = Color.black;
         }
+    }
+
+    public void CheckKingMovement()
+    {
+        nodesToCheck.Clear();
+
+        BoardManager board = GetComponentInParent<BoardManager>();
+        List<Node> nodeList = board.GetNodeList();
+
+        if (nodeTeam == NodeTeam.WHITE)
+        {
+            for (int i = 0; i < nodeList.Count; ++i)
+            {
+                //Checking relevant positions for the knight.
+                Node node = nodeList[i];
+
+                //Checking for King movables.
+                if (node.currentPos.x == currentPos.x + 1 && node.currentPos.y == currentPos.y + 1 ||
+                    node.currentPos.x == currentPos.x + 1 && node.currentPos.y == currentPos.y - 1 ||
+                    node.currentPos.x == currentPos.x - 1 && node.currentPos.y == currentPos.y + 1 ||
+                    node.currentPos.x == currentPos.x - 1 && node.currentPos.y == currentPos.y - 1 ||
+                    node.currentPos.x == currentPos.x + 1 && node.currentPos.y == currentPos.y || 
+                    node.currentPos.x == currentPos.x - 1 && node.currentPos.y == currentPos.y ||
+                    node.currentPos.y == currentPos.y + 1 && node.currentPos.x == currentPos.x ||
+                    node.currentPos.y == currentPos.y - 1 && node.currentPos.x == currentPos.x)
+                {
+                    if (node.nodeTeam != NodeTeam.WHITE)
+                    {
+                        nodesToCheck.Add(node);
+                    }
+                }
+
+            }
+        }
+        else if (nodeTeam == NodeTeam.BLACK)
+        {
+            for (int i = 0; i < nodeList.Count; ++i)
+            {
+                //Checking relevant positions for the knight.
+                Node node = nodeList[i];
+
+                //Checking for King movables.
+                if (node.currentPos.x == currentPos.x + 1 && node.currentPos.y == currentPos.y + 1 ||
+                    node.currentPos.x == currentPos.x + 1 && node.currentPos.y == currentPos.y - 1 ||
+                    node.currentPos.x == currentPos.x - 1 && node.currentPos.y == currentPos.y + 1 ||
+                    node.currentPos.x == currentPos.x - 1 && node.currentPos.y == currentPos.y - 1 ||
+                    node.currentPos.x == currentPos.x + 1 && node.currentPos.y == currentPos.y ||
+                    node.currentPos.x == currentPos.x - 1 && node.currentPos.y == currentPos.y ||
+                    node.currentPos.y == currentPos.y + 1 && node.currentPos.x == currentPos.x ||
+                    node.currentPos.y == currentPos.y - 1 && node.currentPos.x == currentPos.x)
+                {
+                    if (node.nodeTeam != NodeTeam.BLACK)
+                    {
+                        nodesToCheck.Add(node);
+                    }
+                }
+            }
+        }
+        PaintMovables();
     }
 
     public void CheckEmpty()

@@ -16,6 +16,20 @@ public class BoardManager : MonoBehaviour
 
     [SerializeField] private List<Node> nodeList;
 
+    public static BoardManager Instance;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     void Start()
     {
         DrawChessBoard();
@@ -120,5 +134,13 @@ public class BoardManager : MonoBehaviour
     public List<Node> GetNodeList()
     {
         return nodeList;
+    }
+
+    public int GetBoardSize
+    {
+        get
+        {
+            return widthLine;
+        }
     }
 }

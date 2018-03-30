@@ -157,7 +157,7 @@ MonoBehaviour:
   nodePrefab: {fileID: 1762854337369282, guid: e47f49f5793a417468f549157b770ab9, type: 2}
   widthLine: 8
   heightLine: 8
-  offSet: {x: -4.5, y: -4.5}
+  offSet: {x: -3.5, y: -3.5}
   nodeList: []
 --- !u!1 &1640600048
 GameObject:
@@ -249,6 +249,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1697214765}
   - component: {fileID: 1697214764}
+  - component: {fileID: 1697214767}
+  - component: {fileID: 1697214766}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -270,6 +272,8 @@ MonoBehaviour:
   isSelecting: 0
   previousNode: {fileID: 0}
   playerTurn: 1
+  isCheck: 0
+  isCheckmate: 0
 --- !u!4 &1697214765
 Transform:
   m_ObjectHideFlags: 0
@@ -283,3 +287,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1697214766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1697214763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7620e7a87739f94a921fab3c4b7c065, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1697214767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1697214763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3682cf33375844241aa7cd95870c0a5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

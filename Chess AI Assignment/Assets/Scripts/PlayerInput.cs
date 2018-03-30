@@ -9,9 +9,13 @@ public class PlayerInput : MonoBehaviour
 
     [SerializeField] private int playerTurn = 1;
 
+    GameChecker gameChecker;
+    ChessAI chessAI;
+
     void Start()
     {
-
+        gameChecker = GetComponent<GameChecker>();
+        chessAI = GetComponent<ChessAI>();
     }
     
     void Update()
@@ -63,6 +67,18 @@ public class PlayerInput : MonoBehaviour
                             {
                                 node.CheckKnightMovement();
                             }
+                            if (node.GetNodeType() == Node.NodeType.ROOK)
+                            {
+                                node.CheckRookMovement();
+                            }
+                            if (node.GetNodeType() == Node.NodeType.QUEEN)
+                            {
+                                node.CheckQueenMovement();
+                            }
+                            if (node.GetNodeType() == Node.NodeType.KING)
+                            {
+                                node.CheckKingMovement();
+                            }
                             node.PaintSelected();
                             isSelecting = true;
                         }
@@ -110,6 +126,18 @@ public class PlayerInput : MonoBehaviour
                             if (node.GetNodeType() == Node.NodeType.KNIGHT)
                             {
                                 node.CheckKnightMovement();
+                            }
+                            if (node.GetNodeType() == Node.NodeType.ROOK)
+                            {
+                                node.CheckRookMovement();
+                            }
+                            if (node.GetNodeType() == Node.NodeType.QUEEN)
+                            {
+                                node.CheckQueenMovement();
+                            }
+                            if (node.GetNodeType() == Node.NodeType.KING)
+                            {
+                                node.CheckKingMovement();
                             }
                             node.PaintSelected();
                             isSelecting = true;
