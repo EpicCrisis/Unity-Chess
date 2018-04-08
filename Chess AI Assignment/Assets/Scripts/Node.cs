@@ -1808,6 +1808,7 @@ public class Node : MonoBehaviour
         nodeTeam = NodeTeam.NONE;
 
         moveCounter = 0;
+        chessWeight = 0;
 
         UnPaintMovables();
         
@@ -1849,6 +1850,11 @@ public class Node : MonoBehaviour
     public void UpdateMoveCounter(int value)
     {
         moveCounter += value;
+    }
+
+    public void UpdateChessWeight(int value)
+    {
+        chessWeight += value;
     }
 
     public Vector2 GetNodePosition()

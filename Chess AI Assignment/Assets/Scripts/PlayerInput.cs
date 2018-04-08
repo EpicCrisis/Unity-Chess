@@ -7,6 +7,11 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] private bool isSelecting = false;
     [SerializeField] private Node previousNode;
 
+    //Automatically pause any input and show restart when checkmate.
+    [SerializeField] private bool isCheckmate = false;
+    //Need more thought on implementation.
+    [SerializeField] private bool isCheck = false;
+
     [SerializeField] private int playerTurn = 1;
 
     BoardManager board;
@@ -22,7 +27,15 @@ public class PlayerInput : MonoBehaviour
     
     void Update()
     {
-        UpdateSelection();
+        if (isCheckmate)
+        {
+            Debug.Log("The King Is Dead Stupid!");
+            //Add function for restart.
+        }
+        else
+        {
+            UpdateSelection();
+        }
     }
     
     private void UpdateSelection()
@@ -86,42 +99,14 @@ public class PlayerInput : MonoBehaviour
                 //The phase where player chooses the node to move to.
                 else if (isSelecting)
                 {
-                    isSelecting = false;
-
-                    //Check for the correct node
-                    for (int i = 0; i < previousNode.GetNodesToCheck().Count; ++i)
-                    {
-                        Node toNode = previousNode.GetNodesToCheck()[i];
-
-                        if (node == toNode)
-                        {
-                            node = toNode;
-
-                            node.UpdateNode();
-                        }
-                    }
-                    //Reset the previous node.
-                    previousNode.CheckEmpty();
-                    previousNode.GetNodesToCheck().Clear();
-
-                    for (int i = 0; i < board.GetNodeList().Count; ++i)
-                    {
-                        board.GetNodeList()[i].UpdateNode();
-                    }
-
-                    playerTurn++;
-
                     //if (previousNode.GetNodesToCheck().Contains(node))
                     //{
                     //    isSelecting = false;
 
-                    //    node = previousNode;
-
-                    //    //node.SetNodeType((int)previousNode.GetNodeType());
-                    //    //node.SetNodeTeam((int)previousNode.GetNodeTeam());
+                    //    UnityEditorInternal.ComponentUtility.CopyComponent(previousNode);
+                    //    UnityEditorInternal.ComponentUtility.PasteComponentValues(node);
 
                     //    node.UpdateNode();
-                    //    //node.UpdateMoveCounter(previousNode.GetMoveCounter + 1);
 
                     //    //Reset the previous node.
                     //    previousNode.CheckEmpty();
@@ -134,6 +119,35 @@ public class PlayerInput : MonoBehaviour
 
                     //    playerTurn++;
                     //}
+
+                    if (previousNode.GetNodesToCheck().Contains(node))
+                    {
+                        isSelecting = false;
+
+                        if (node.GetNodeType() == Node.NodeType.KING)
+                        {
+                            isCheckmate = true;
+                        }
+
+                        //Updates to change for new node.
+                        node.SetNodeType((int)previousNode.GetNodeType());
+                        node.SetNodeTeam((int)previousNode.GetNodeTeam());
+
+                        node.UpdateNode();
+                        node.UpdateMoveCounter(previousNode.GetMoveCounter + 1);
+                        node.UpdateChessWeight(previousNode.GetChessWeight);
+
+                        //Reset the previous node.
+                        previousNode.CheckEmpty();
+                        previousNode.GetNodesToCheck().Clear();
+                        
+                        for (int i = 0; i < board.GetNodeList().Count; ++i)
+                        {
+                            board.GetNodeList()[i].UpdateNode();
+                        }
+
+                        playerTurn++;
+                    }
                 }
             }
         }
@@ -151,12 +165,14 @@ public class PlayerInput : MonoBehaviour
                 board.GetNodeList()[i].UpdateNode();
             }
 
-
             chessAI.CheckScore();
 
             chessAI.GetAIMovables();
 
+            chessAI.AIMakeAction();
+
             playerTurn++;
+
             if (playerTurn > 2)
             {
                 playerTurn = 1;
@@ -164,17 +180,35 @@ public class PlayerInput : MonoBehaviour
         }
     }
 
-    void CheckPlayerAction(int playerturn)
-    {
-        if (playerturn == 1)
-        {
-            
-        }
-        else if (playerturn == 2)
-        {
+    //Check whether King is alive or not.
+    //public void CheckForKing()
+    //{
+    //    for (int i = 0; i < board.GetNodeList().Count; ++i)
+    //    {
+    //        Node node = board.GetNodeList()[i];
+    //        Node.NodeType nodeT = node.GetNodeType();
 
-        }
-    }
+    //        if (board.GetNodeList().Contains(node))
+    //        {
+
+    //        }
+
+    //        if (node.GetNodeTeam() == Node.NodeTeam.WHITE)
+    //        {
+    //            if (nodeT == Node.NodeType.KING)
+    //            {
+    //                isCheckmate = false;
+    //            }
+    //        }
+    //        else if (node.GetNodeTeam() == Node.NodeTeam.BLACK)
+    //        {
+    //            if (nodeT == Node.NodeType.KING)
+    //            {
+    //                isCheckmate = false;
+    //            }
+    //        }
+    //    }
+    //}
 
     public int GetPlayerTurn
     {
@@ -182,5 +216,10 @@ public class PlayerInput : MonoBehaviour
         {
             return playerTurn;
         }
+    }
+
+    public void SetCheckmate(bool boolean)
+    {
+        isCheckmate = boolean;
     }
 }

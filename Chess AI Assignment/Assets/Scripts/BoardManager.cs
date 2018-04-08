@@ -15,6 +15,8 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private Vector2 offSet = new Vector2(-4.0f, -4.0f);
 
     [SerializeField] private List<Node> nodeList;
+    //[SerializeField] private List<Node> nodeListWhite;
+    //[SerializeField] private List<Node> nodeListBlack;
 
     public static BoardManager Instance;
 
