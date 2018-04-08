@@ -12,7 +12,7 @@ public class GameChecker : MonoBehaviour
 
     void Start()
     {
-        board = BoardManager.Instance;
+        board = GetComponent<BoardManager>();
     }
     
     void Update()

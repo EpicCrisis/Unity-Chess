@@ -9,21 +9,19 @@ public class PlayerInput : MonoBehaviour
 
     [SerializeField] private int playerTurn = 1;
 
+    BoardManager board;
     GameChecker gameChecker;
     ChessAI chessAI;
 
     void Start()
     {
+        board = GetComponent<BoardManager>();
         gameChecker = GetComponent<GameChecker>();
         chessAI = GetComponent<ChessAI>();
     }
     
     void Update()
     {
-        if (playerTurn > 2)
-        {
-            playerTurn = 1;
-        }
         UpdateSelection();
     }
     
@@ -42,128 +40,100 @@ public class PlayerInput : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit) && hit.transform.CompareTag("Node"))
             {
-                Debug.Log("You just clicked on this: " + hit.transform);
-
                 Node node = hit.transform.GetComponent<Node>();
-                if (playerTurn == 1)
+                if (playerTurn == 1 && node.GetNodeTeam() == Node.NodeTeam.WHITE)
                 {
                     if (!isSelecting)
                     {
-                        if (node.GetNodeTeam() == Node.NodeTeam.WHITE)
+                        if (node.GetNodeType() != Node.NodeType.NONE)
                         {
-                            if (node.GetNodeType() != Node.NodeType.NONE)
-                            {
-                                previousNode = node;
-                            }
-                            if (node.GetNodeType() == Node.NodeType.PAWN)
-                            {
-                                node.CheckPawnMovement();
-                            }
-                            if (node.GetNodeType() == Node.NodeType.BISHOP)
-                            {
-                                node.CheckBishopMovement();
-                            }
-                            if (node.GetNodeType() == Node.NodeType.KNIGHT)
-                            {
-                                node.CheckKnightMovement();
-                            }
-                            if (node.GetNodeType() == Node.NodeType.ROOK)
-                            {
-                                node.CheckRookMovement();
-                            }
-                            if (node.GetNodeType() == Node.NodeType.QUEEN)
-                            {
-                                node.CheckQueenMovement();
-                            }
-                            if (node.GetNodeType() == Node.NodeType.KING)
-                            {
-                                node.CheckKingMovement();
-                            }
-                            node.PaintSelected();
-                            isSelecting = true;
+                            previousNode = node;
                         }
-                    }
-                    //The phase where player chooses the node to move to.
-                    else if (isSelecting)
-                    {
-                        //Check for the correct node
-                        if (previousNode.GetNodesToCheck().Contains(node))
+
+                        for (int i = 0; i < board.GetNodeList().Count; ++i)
                         {
-                            isSelecting = false;
-
-                            node.SetNodeType((int)previousNode.GetNodeType());
-                            node.SetNodeTeam((int)previousNode.GetNodeTeam());
-
-                            node.UpdateNode();
-                            node.UpdateMoveCounter(previousNode.GetMoveCounter + 1);
-
-                            //Reset the previous node.
-                            previousNode.CheckEmpty();
-                            previousNode.GetNodesToCheck().Clear();
-
-                            playerTurn++;
+                            board.GetNodeList()[i].UpdateNode();
                         }
+
+                        //node.UpdateNode();
+
+                        node.PaintSelected();
+                        node.PaintMovables();
+                        isSelecting = true;
                     }
                 }
-                else if (playerTurn == 2)
-                {
-                    if (!isSelecting)
-                    {
-                        if (node.GetNodeTeam() == Node.NodeTeam.BLACK)
-                        {
-                            if (node.GetNodeType() != Node.NodeType.NONE)
-                            {
-                                previousNode = node;
-                            }
-                            if (node.GetNodeType() == Node.NodeType.PAWN)
-                            {
-                                node.CheckPawnMovement();
-                            }
-                            if (node.GetNodeType() == Node.NodeType.BISHOP)
-                            {
-                                node.CheckBishopMovement();
-                            }
-                            if (node.GetNodeType() == Node.NodeType.KNIGHT)
-                            {
-                                node.CheckKnightMovement();
-                            }
-                            if (node.GetNodeType() == Node.NodeType.ROOK)
-                            {
-                                node.CheckRookMovement();
-                            }
-                            if (node.GetNodeType() == Node.NodeType.QUEEN)
-                            {
-                                node.CheckQueenMovement();
-                            }
-                            if (node.GetNodeType() == Node.NodeType.KING)
-                            {
-                                node.CheckKingMovement();
-                            }
-                            node.PaintSelected();
-                            isSelecting = true;
-                        }
-                    }
-                    //The phase where player chooses the node to move to.
-                    else if (isSelecting)
-                    {
-                        //Check for the correct node
-                        if (previousNode.GetNodesToCheck().Contains(node))
-                        {
-                            isSelecting = false;
+                //else if (playerTurn == 2 && node.GetNodeTeam() == Node.NodeTeam.BLACK)
+                //{
+                //    if (!isSelecting)
+                //    {
+                //        if (node.GetNodeType() != Node.NodeType.NONE)
+                //        {
+                //            previousNode = node;
+                //        }
 
-                            node.SetNodeType((int)previousNode.GetNodeType());
-                            node.SetNodeTeam((int)previousNode.GetNodeTeam());
+                //        for (int i = 0; i < board.GetNodeList().Count; ++i)
+                //        {
+                //            board.GetNodeList()[i].UpdateNode();
+                //        }
+
+                //        node.UpdateNode();
+
+                //        node.PaintMovables();
+                //        node.PaintSelected();
+                //        isSelecting = true;
+                //    }
+                //}
+                //The phase where player chooses the node to move to.
+                else if (isSelecting)
+                {
+                    isSelecting = false;
+
+                    //Check for the correct node
+                    for (int i = 0; i < previousNode.GetNodesToCheck().Count; ++i)
+                    {
+                        Node toNode = previousNode.GetNodesToCheck()[i];
+
+                        if (node == toNode)
+                        {
+                            node = toNode;
 
                             node.UpdateNode();
-                            node.UpdateMoveCounter(previousNode.GetMoveCounter + 1);
-
-                            //Reset the previous node.
-                            previousNode.CheckEmpty();
-                            previousNode.GetNodesToCheck().Clear();
-
-                            playerTurn++;
                         }
                     }
+                    //Reset the previous node.
+                    previousNode.CheckEmpty();
+                    previousNode.GetNodesToCheck().Clear();
+
+                    for (int i = 0; i < board.GetNodeList().Count; ++i)
+                    {
+                        board.GetNodeList()[i].UpdateNode();
+                    }
+
+                    playerTurn++;
+
+                    //if (previousNode.GetNodesToCheck().Contains(node))
+                    //{
+                    //    isSelecting = false;
+
+                    //    node = previousNode;
+
+                    //    //node.SetNodeType((int)previousNode.GetNodeType());
+                    //    //node.SetNodeTeam((int)previousNode.GetNodeTeam());
+
+                    //    node.UpdateNode();
+                    //    //node.UpdateMoveCounter(previousNode.GetMoveCounter + 1);
+
+                    //    //Reset the previous node.
+                    //    previousNode.CheckEmpty();
+                    //    previousNode.GetNodesToCheck().Clear();
+
+                    //    for (int i = 0; i < board.GetNodeList().Count; ++i)
+                    //    {
+                    //        board.GetNodeList()[i].UpdateNode();
+                    //    }
+
+                    //    playerTurn++;
+                    //}
                 }
             }
         }
@@ -173,7 +143,44 @@ public class PlayerInput : MonoBehaviour
 
             previousNode.UnPaintMovables();
         }
+        else if (playerTurn == 2)
+        {
+            Debug.Log("Auto player turn is active!!!");
+            for (int i = 0; i < board.GetNodeList().Count; ++i)
+            {
+                board.GetNodeList()[i].UpdateNode();
+            }
+
+
+            chessAI.CheckScore();
+
+            chessAI.GetAIMovables();
+
+            playerTurn++;
+            if (playerTurn > 2)
+            {
+                playerTurn = 1;
+            }
+        }
     }
 
-    
+    void CheckPlayerAction(int playerturn)
+    {
+        if (playerturn == 1)
+        {
+            
+        }
+        else if (playerturn == 2)
+        {
+
+        }
+    }
+
+    public int GetPlayerTurn
+    {
+        get
+        {
+            return playerTurn;
+        }
+    }
 }

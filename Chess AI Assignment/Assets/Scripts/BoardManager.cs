@@ -18,6 +18,8 @@ public class BoardManager : MonoBehaviour
 
     public static BoardManager Instance;
 
+    ChessAI AICheck;
+
     private void Awake()
     {
         if (Instance == null)
@@ -32,7 +34,11 @@ public class BoardManager : MonoBehaviour
 
     void Start()
     {
+        AICheck = GetComponent<ChessAI>();
+
         DrawChessBoard();
+
+        AICheck.CheckScore();
     }
 
     void Update()
@@ -128,6 +134,7 @@ public class BoardManager : MonoBehaviour
         for (int i = 0; i < nodeList.Count; ++i)
         {
             nodeList[i].UpdateNode();
+            nodeList[i].StartChessWeight();
         }
     }
 

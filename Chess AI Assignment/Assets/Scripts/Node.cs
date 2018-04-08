@@ -39,6 +39,7 @@ public class Node : MonoBehaviour
     [SerializeField] private GameObject currentPrefab;
 
     [SerializeField] private int moveCounter;
+    [SerializeField] private int chessWeight;
 
     void Start()
     {
@@ -86,26 +87,32 @@ public class Node : MonoBehaviour
         if (nodeType == NodeType.PAWN)
         {
             CheckPawn();
+            CheckPawnMovement();
         }
         else if (nodeType == NodeType.BISHOP)
         {
             CheckBishop();
+            CheckBishopMovement();
         }
         else if (nodeType == NodeType.KNIGHT)
         {
             CheckKnight();
+            CheckKnightMovement();
         }
         else if (nodeType == NodeType.ROOK)
         {
             CheckRook();
+            CheckRookMovement();
         }
         else if (nodeType == NodeType.QUEEN)
         {
             CheckQueen();
+            CheckQueenMovement();
         }
         else if (nodeType == NodeType.KING)
         {
             CheckKing();
+            CheckKingMovement();
         }
         else
         {
@@ -303,7 +310,6 @@ public class Node : MonoBehaviour
                 j--;
             }
         }
-        PaintMovables();
 
         //=====================================================
         // ARCHIVED CODE
@@ -724,7 +730,6 @@ public class Node : MonoBehaviour
                 j--;
             }
         }
-        PaintMovables();
     }
 
     public void CheckKnight()
@@ -798,7 +803,6 @@ public class Node : MonoBehaviour
                 }
             }
         }
-        PaintMovables();
     }
 
     public void CheckRook()
@@ -1113,7 +1117,6 @@ public class Node : MonoBehaviour
                 j--;
             }
         }
-        PaintMovables();
     }
 
     public void CheckQueen()
@@ -1724,7 +1727,6 @@ public class Node : MonoBehaviour
                 j--;
             }
         }
-        PaintMovables();
     }
 
     public void CheckKing()
@@ -1798,7 +1800,6 @@ public class Node : MonoBehaviour
                 }
             }
         }
-        PaintMovables();
     }
 
     public void CheckEmpty()
@@ -1865,6 +1866,42 @@ public class Node : MonoBehaviour
         get
         {
             return moveCounter;
+        }
+    }
+
+    public void StartChessWeight()
+    {
+        if (nodeType == NodeType.PAWN)
+        {
+            chessWeight = 1;
+        }
+        if (nodeType == NodeType.BISHOP)
+        {
+            chessWeight = 3;
+        }
+        if (nodeType == NodeType.KNIGHT)
+        {
+            chessWeight = 6;
+        }
+        if (nodeType == NodeType.ROOK)
+        {
+            chessWeight = 7;
+        }
+        if (nodeType == NodeType.QUEEN)
+        {
+            chessWeight = 15;
+        }
+        if (nodeType == NodeType.KING)
+        {
+            chessWeight = 45;
+        }
+    }
+
+    public int GetChessWeight
+    {
+        get
+        {
+            return chessWeight;
         }
     }
 }
