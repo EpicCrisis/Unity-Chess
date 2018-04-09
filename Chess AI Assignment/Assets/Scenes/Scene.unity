@@ -185,7 +185,6 @@ GameObject:
   - component: {fileID: 1334880572}
   - component: {fileID: 1334880573}
   - component: {fileID: 1334880576}
-  - component: {fileID: 1334880575}
   - component: {fileID: 1334880574}
   - component: {fileID: 1334880577}
   m_Layer: 0
@@ -219,12 +218,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6722e9819fb2d074a90d4f466708c3c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selection: {x: -1, y: -1}
   nodePrefab: {fileID: 1762854337369282, guid: e47f49f5793a417468f549157b770ab9, type: 2}
   widthLine: 8
   heightLine: 8
   offSet: {x: -3.5, y: -3.5}
   nodeList: []
+  actionList: []
 --- !u!114 &1334880574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,19 +242,6 @@ MonoBehaviour:
   AIScore: 0
   previousNode: {fileID: 0}
   nodeToMove: {fileID: 0}
---- !u!114 &1334880575
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1334880571}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3682cf33375844241aa7cd95870c0a5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isCheck: 0
-  isCheckmate: 0
 --- !u!114 &1334880576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,6 +255,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isSelecting: 0
   previousNode: {fileID: 0}
+  isCheckmate: 0
+  isCheck: 0
   playerTurn: 1
 --- !u!114 &1334880577
 MonoBehaviour:

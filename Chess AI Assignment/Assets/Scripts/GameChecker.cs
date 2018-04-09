@@ -5,8 +5,8 @@ using UnityEngine;
 public class GameChecker : MonoBehaviour
 {
     //Checking for the condition of the king to restrict movement to protect king only.
-    [SerializeField] private bool isCheck = false;
-    [SerializeField] private bool isCheckmate = false;
+    //[SerializeField] private bool isCheck = false;
+    //[SerializeField] private bool isCheckmate = false;
 
     BoardManager board;
 

@@ -7,14 +7,15 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private const float TILE_SIZE = 1.0f;
     [SerializeField] private const float TILE_OFFSET = 0.5f;
 
-    [SerializeField] private Vector2 selection = new Vector2(-1.0f, -1.0f);
+    //[SerializeField] private Vector2 selection = new Vector2(-1.0f, -1.0f);
     [SerializeField] private GameObject nodePrefab;
     
     [SerializeField] private int widthLine = 8;
     [SerializeField] private int heightLine = 8;
     [SerializeField] private Vector2 offSet = new Vector2(-4.0f, -4.0f);
 
-    [SerializeField] private List<Node> nodeList;
+    [SerializeField] private List<Node> nodeList = null;
+    [SerializeField] private List<Node> actionList = null;
     //[SerializeField] private List<Node> nodeListWhite;
     //[SerializeField] private List<Node> nodeListBlack;
 
@@ -133,6 +134,13 @@ public class BoardManager : MonoBehaviour
             }
         }
 
+        StartNodeList();
+
+        UpdateActionList();
+    }
+
+    public void StartNodeList()
+    {
         for (int i = 0; i < nodeList.Count; ++i)
         {
             nodeList[i].UpdateNode();
@@ -140,9 +148,47 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    public void UpdateNodeNActionList()
+    {
+        //Debug.Log("Everything in node and action list is updated!");
+
+        UpdateNodeList();
+        UpdateActionList();
+    }
+
+    public void UpdateNodeList()
+    {
+        for (int i = 0; i < nodeList.Count; ++i)
+        {
+            nodeList[i].UpdateNode();
+        }
+    }
+
+    public void UpdateActionList()
+    {
+        actionList.Clear();
+
+        for (int i = 0; i < nodeList.Count; ++i)
+        {
+            Node node = nodeList[i];
+
+            for (int j = 0; j < node.GetNodesToCheck().Count; ++j)
+            {
+                Node validMoves = node.GetNodesToCheck()[j];
+
+                actionList.Add(validMoves);
+            }
+        }
+    }
+
     public List<Node> GetNodeList()
     {
         return nodeList;
+    }
+
+    public List<Node> GetActionList()
+    {
+        return actionList;
     }
 
     public int GetBoardSize

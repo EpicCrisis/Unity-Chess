@@ -1847,6 +1847,12 @@ public class Node : MonoBehaviour
         sRendThis.material.color = Color.yellow;
     }
 
+    public void PaintFullSelected()
+    {
+        PaintSelected();
+        PaintMovables();
+    }
+
     public void UpdateMoveCounter(int value)
     {
         moveCounter += value;
@@ -1854,7 +1860,7 @@ public class Node : MonoBehaviour
 
     public void UpdateChessWeight(int value)
     {
-        chessWeight += value;
+        chessWeight = value;
     }
 
     public Vector2 GetNodePosition()

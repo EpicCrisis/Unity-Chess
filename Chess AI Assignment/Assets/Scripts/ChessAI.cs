@@ -55,10 +55,69 @@ public class ChessAI : MonoBehaviour
 
     public void GetAIMovables()
     {
-        Debug.Log("AI looking for movables!");
+        //Debug.Log("AI looking for movables!");
 
+        //Update score before checking.
+        CheckScore();
+
+        GetBlackMoves();
+
+        GetBlackActions();
+    }
+
+    public void AIMakeAction()
+    {
+        //Debug.Log("AI is doing stuff!");
+
+        bool isAvailable = false;
+
+        while (!isAvailable)
+        {
+            chosenPieceMoves.Clear();
+            previousNode = null;
+            nodeToMove = null;
+
+            int randomPiece = 0;
+            int randomAction = 0;
+
+            //Random choose a piece to use.
+            randomPiece = Random.Range(0, AIMovables.Count);
+            previousNode = AIMovables[randomPiece]; 
+
+            //Checks if chosen pieces has valid moves.
+            if (previousNode.GetNodesToCheck().Count > 0)
+            {
+                for (int i = 0; i < previousNode.GetNodesToCheck().Count; ++i)
+                {
+                    chosenPieceMoves.Add(previousNode.GetNodesToCheck()[i]);
+                }
+
+                //Chooses a random valid node to move to, base on chosen chess piece.
+                randomAction = Random.Range(0, chosenPieceMoves.Count);
+                nodeToMove = chosenPieceMoves[randomAction];
+
+                player.UpdateInputs(nodeToMove, previousNode);
+
+                //Update score after action.
+                CheckScore();
+
+                isAvailable = true;
+            }
+            else
+            {
+                continue;
+            }
+        }
+    }
+
+    public void CalculateHeuristics()
+    {
+
+    }
+
+    public void GetBlackMoves()
+    {
         AIMovables.Clear();
-        AIActionsList.Clear();
 
         for (int i = 0; i < board.GetNodeList().Count; ++i)
         {
@@ -69,6 +128,11 @@ public class ChessAI : MonoBehaviour
                 AIMovables.Add(node);
             }
         }
+    }
+
+    public void GetBlackActions()
+    {
+        AIActionsList.Clear();
 
         for (int i = 0; i < AIMovables.Count; ++i)
         {
@@ -82,66 +146,7 @@ public class ChessAI : MonoBehaviour
             }
         }
     }
-
-    public void AIMakeAction()
-    {
-        Debug.Log("AI is Doing Stuff!");
-
-        bool isAvailable = false;
-
-        while (!isAvailable)
-        {
-            chosenPieceMoves.Clear();
-            previousNode = null;
-            nodeToMove = null;
-
-            int randomPiece = 0;
-            int randomAction = 0;
-
-            randomPiece = Random.Range(0, AIMovables.Count);
-            previousNode = AIMovables[randomPiece]; //The randomly chosen chess piece.
-
-            if (previousNode.GetNodesToCheck().Count > 0)
-            {
-                for (int i = 0; i < previousNode.GetNodesToCheck().Count; ++i)
-                {
-                    chosenPieceMoves.Add(previousNode.GetNodesToCheck()[i]);
-                }
-
-                randomAction = Random.Range(0, chosenPieceMoves.Count);
-                nodeToMove = chosenPieceMoves[randomAction]; //The randomly chosen chess move.
-                
-                if (nodeToMove.GetNodeType() == Node.NodeType.KING)
-                {
-                    player.SetCheckmate(true);
-                }
-
-                //Updates to change for new node.
-                nodeToMove.SetNodeType((int)previousNode.GetNodeType());
-                nodeToMove.SetNodeTeam((int)previousNode.GetNodeTeam());
-
-                nodeToMove.UpdateNode();
-                nodeToMove.UpdateMoveCounter(previousNode.GetMoveCounter + 1);
-                nodeToMove.UpdateChessWeight(previousNode.GetChessWeight);
-
-                //Reset the previous node.
-                previousNode.CheckEmpty();
-                previousNode.GetNodesToCheck().Clear();
-
-                for (int i = 0; i < board.GetNodeList().Count; ++i)
-                {
-                    board.GetNodeList()[i].UpdateNode();
-                }
-
-                isAvailable = true;
-            }
-            else
-            {
-                continue;
-            }
-        }
-    }
-
+    
     public int GetAIWeight
     {
         get
