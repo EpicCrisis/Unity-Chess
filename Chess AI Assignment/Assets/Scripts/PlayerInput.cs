@@ -18,19 +18,25 @@ public class PlayerInput : MonoBehaviour
 
     BoardManager board;
     ChessAI chessAI;
+    UIManager UIManager;
 
     void Start()
     {
         board = GetComponent<BoardManager>();
         chessAI = GetComponent<ChessAI>();
+        UIManager = GetComponent<UIManager>();
     }
     
     void Update()
     {
         if (isCheckmate)
         {
-            Debug.Log("The King Is Dead Stupid!");
-            //Add function for restart.
+            //Debug.Log("The King Is Dead Stupid!");
+            if (UIManager.GetRestartButton().activeSelf == false)
+            {
+                //Add function for restart.
+                UIManager.GetRestartButton().SetActive(true);
+            }
         }
         else
         {
@@ -71,6 +77,22 @@ public class PlayerInput : MonoBehaviour
                         isSelecting = true;
                     }
                 }
+                //else if (playerTurn == 2 && nodeToMove.GetNodeTeam() == Node.NodeTeam.BLACK)
+                //{
+                //    if (!isSelecting)
+                //    {
+                //        if (nodeToMove.GetNodeType() != Node.NodeType.NONE)
+                //        {
+                //            previousNode = nodeToMove;
+                //        }
+
+                //        board.UpdateNodeNActionList();
+
+                //        nodeToMove.PaintFullSelected();
+
+                //        isSelecting = true;
+                //    }
+                //}
                 //The phase where player chooses the node to move to.
                 else if (isSelecting)
                 {
@@ -96,9 +118,7 @@ public class PlayerInput : MonoBehaviour
         else if (playerTurn == 2)
         {
             //Debug.Log("Auto player turn is active!!!");
-
             chessAI.GetAIMovables();
-
             chessAI.AIMakeAction();
 
             board.UpdateNodeNActionList();
@@ -117,6 +137,24 @@ public class PlayerInput : MonoBehaviour
         if (node.GetNodeType() == Node.NodeType.KING)
         {
             isCheckmate = true;
+        }
+
+        if (previousNode.GetNodeType() == Node.NodeType.PAWN)
+        {
+            if (previousNode.GetNodeTeam() == Node.NodeTeam.WHITE)
+            {
+                if (node.GetNodePosition().y == 7)
+                {
+                    previousNode.SetNodeType((int)Node.NodeType.QUEEN);
+                }
+            }
+            else if (previousNode.GetNodeTeam() == Node.NodeTeam.BLACK)
+            {
+                if (node.GetNodePosition().y == 0)
+                {
+                    previousNode.SetNodeType((int)Node.NodeType.QUEEN);
+                }
+            }
         }
 
         //Updates to change for new node.
@@ -160,5 +198,10 @@ public class PlayerInput : MonoBehaviour
     public void SetCheckmate(bool boolean)
     {
         isCheckmate = boolean;
+    }
+
+    public bool GetCheckmateState()
+    {
+        return isCheckmate;
     }
 }

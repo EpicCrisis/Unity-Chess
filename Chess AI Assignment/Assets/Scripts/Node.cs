@@ -27,29 +27,19 @@ public class Node : MonoBehaviour
     [SerializeField] private NodeTeam nodeTeam;
 
     [SerializeField] private Vector2 currentPos;
-    [SerializeField] private List<Node> nodesToCheck;
+    [SerializeField] private List<Node> nodesToCheck = null;
 
-    [SerializeField] private GameObject pawnPrefab;
-    [SerializeField] private GameObject bishopPrefab;
-    [SerializeField] private GameObject knightPrefab;
-    [SerializeField] private GameObject rookPrefab;
-    [SerializeField] private GameObject queenPrefab;
-    [SerializeField] private GameObject kingPrefab;
+    [SerializeField] private GameObject pawnPrefab = null;
+    [SerializeField] private GameObject bishopPrefab = null;
+    [SerializeField] private GameObject knightPrefab = null;
+    [SerializeField] private GameObject rookPrefab = null;
+    [SerializeField] private GameObject queenPrefab = null;
+    [SerializeField] private GameObject kingPrefab = null;
 
     [SerializeField] private GameObject currentPrefab;
 
     [SerializeField] private int moveCounter;
     [SerializeField] private int chessWeight;
-
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-
-    }
 
     public void SetCurrentPos(int x, int y)
     {

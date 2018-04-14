@@ -7,7 +7,7 @@ public class ChessAI : MonoBehaviour
     BoardManager board;
     PlayerInput player;
 
-    MoveWeights moveWeights;
+    //MoveWeights moveWeights;
 
     [SerializeField] private List<Node> whiteMovables = null;
     [SerializeField] private List<Node> whiteActions = null;
@@ -19,6 +19,7 @@ public class ChessAI : MonoBehaviour
 
     [SerializeField] int whiteScore = 0;
     [SerializeField] int blackScore = 0;
+    [SerializeField] int totalScore = 0;
 
     [SerializeField] Node previousNode;
     [SerializeField] Node nodeToMove;
@@ -57,24 +58,30 @@ public class ChessAI : MonoBehaviour
                 whiteScore += node.GetChessWeight;
             }
         }
+
+        GetTotalScore();
+    }
+
+    public int GetTotalScore()
+    {
+        totalScore = blackScore - whiteScore;
+
+        return totalScore;
     }
 
     public void GetAIMovables()
     {
         //Debug.Log("AI looking for movables!");
-
         //Update score before checking.
         CheckScore();
 
         GetBlackMoves();
-
         GetBlackActions();
     }
 
     public void AIMakeAction()
     {
         //Debug.Log("AI is doing stuff!");
-
         bool isAvailable = false;
 
         while (!isAvailable)
@@ -182,36 +189,27 @@ public class ChessAI : MonoBehaviour
     //    }
     //}
 
-    public int Evaluate()
-    {
-        float pieceDifference = 0;
-        float whiteWeight = 0;
-        float blackWeight = 0;
+    //public int Evaluate()
+    //{
+    //    float pieceDifference = 0;
+    //    float whiteWeight = 0;
+    //    float blackWeight = 0;
 
-        foreach (Node node in whiteMovables)
-        {
-            whiteWeight += moveWeights.GetBoardWeight(previousNode.GetNodeType(), previousNode.GetNodePosition(), Node.NodeTeam.WHITE);
-        }
-        foreach (Node node in blackMovables)
-        {
-            blackWeight += moveWeights.GetBoardWeight(previousNode.GetNodeType(), previousNode.GetNodePosition(), Node.NodeTeam.BLACK);
-        }
+    //    foreach (Node node in whiteMovables)
+    //    {
+    //        whiteWeight += moveWeights.GetBoardWeight(previousNode.GetNodeType(), previousNode.GetNodePosition(), Node.NodeTeam.WHITE);
+    //    }
+    //    foreach (Node node in blackMovables)
+    //    {
+    //        blackWeight += moveWeights.GetBoardWeight(previousNode.GetNodeType(), previousNode.GetNodePosition(), Node.NodeTeam.BLACK);
+    //    }
 
-        pieceDifference = (blackScore + (blackWeight / 100)) - (whiteScore + (whiteWeight / 100));
+    //    pieceDifference = (blackScore + (blackWeight / 100)) - (whiteScore + (whiteWeight / 100));
 
-        return Mathf.RoundToInt(pieceDifference * 100);
-    }
+    //    return Mathf.RoundToInt(pieceDifference * 100);
+    //}
 
-    public void GetBoardState()
-    {
-        blackMovables.Clear();
-        whiteMovables.Clear();
-        blackScore = 0;
-        whiteScore = 0;
 
-        GetBlackMoves();
-        GetWhiteMoves();
-    }
 
     //public Move CreateMove(Tile tile, Tile move)
     //{
@@ -227,6 +225,17 @@ public class ChessAI : MonoBehaviour
 
     //    return tempMove;
     //}
+
+    public void GetBoardState()
+    {
+        blackMovables.Clear();
+        whiteMovables.Clear();
+        blackScore = 0;
+        whiteScore = 0;
+
+        GetBlackMoves();
+        GetWhiteMoves();
+    }
 
     public void GetBlackMoves()
     {

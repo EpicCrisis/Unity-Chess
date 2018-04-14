@@ -8,7 +8,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private const float TILE_OFFSET = 0.5f;
 
     //[SerializeField] private Vector2 selection = new Vector2(-1.0f, -1.0f);
-    [SerializeField] private GameObject nodePrefab;
+    [SerializeField] private GameObject nodePrefab = null;
     
     [SerializeField] private int widthLine = 8;
     [SerializeField] private int heightLine = 8;
@@ -135,7 +135,6 @@ public class BoardManager : MonoBehaviour
         }
 
         StartNodeList();
-
         UpdateActionList();
     }
 
