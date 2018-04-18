@@ -27,7 +27,7 @@ public class Node : MonoBehaviour
     [SerializeField] private NodeTeam nodeTeam;
 
     [SerializeField] private Vector2 currentPos;
-    [SerializeField] private List<Node> nodesToCheck = null;
+    [SerializeField] private List<Node> nodesToCheck = new List<Node>();
 
     [SerializeField] private GameObject pawnPrefab = null;
     [SerializeField] private GameObject bishopPrefab = null;
@@ -1906,4 +1906,5 @@ public class Node : MonoBehaviour
             return chessWeight;
         }
     }
+
 }

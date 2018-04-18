@@ -9,13 +9,15 @@ public class ChessAI : MonoBehaviour
 
     //MoveWeights moveWeights;
 
-    [SerializeField] private List<Node> whiteMovables = null;
-    [SerializeField] private List<Node> whiteActions = null;
+    [SerializeField] private List<Node> whiteMovables = new List<Node>();
+    [SerializeField] private List<Node> whiteActions = new List<Node>();
 
-    [SerializeField] private List<Node> blackMovables = null;
-    [SerializeField] private List<Node> blackActions = null;
+    [SerializeField] private List<Node> blackMovables = new List<Node>();
+    [SerializeField] private List<Node> blackActions = new List<Node>();
 
-    [SerializeField] private List<Node> chosenPieceMoves = null;
+    [SerializeField] private List<Node> chosenPieceMoves = new List<Node>();
+
+    [SerializeField] private Stack<Node> moveStack = new Stack<Node>();
 
     [SerializeField] int whiteScore = 0;
     [SerializeField] int blackScore = 0;
@@ -123,7 +125,7 @@ public class ChessAI : MonoBehaviour
         }
     }
 
-    //public int CalculateHeuristics(int depth, int alpha, int beta, int max)
+    //public int CalculateHeuristics(int depth, int alpha, int beta, bool max)
     //{
     //    GetBoardState();
 
@@ -134,14 +136,31 @@ public class ChessAI : MonoBehaviour
     //    if (max)
     //    {
     //        int score = -10000000;
-    //        List<Move> allMoves = _GetMoves(Piece.playerColor.BLACK);
-    //        foreach (Move move in allMoves)
+
+    //        for (int i = 0; i < blackMovables.Count; ++i)
+    //        {
+    //            Node selectedBlack = blackMovables[i];
+
+    //            for (int j = 0; j < selectedBlack.GetNodesToCheck().Count; ++j)
+    //            {
+    //                Node nextMove = selectedBlack.GetNodesToCheck()[j];
+                    
+    //                FakeMove(selectedBlack, nextMove);
+                    
+    //                score = CalculateHeuristics(depth - 1, alpha, beta, false);
+
+    //                UndoFakeMove();
+    //            }
+    //        }
+
+    //        List<Node> nodeMoves = blackActions;
+    //        foreach (Node move in nodeMoves)
     //        {
     //            moveStack.Push(move);
 
-    //            _DoFakeMove(move.firstPosition, move.secondPosition);
+    //            FakeMove(previousNode, nodeToMove);
 
-    //            score = AB(depth - 1, alpha, beta, false);
+    //            score = CalculateHeuristics(depth - 1, alpha, beta, false);
 
     //            _UndoFakeMove();
 
@@ -208,8 +227,6 @@ public class ChessAI : MonoBehaviour
 
     //    return Mathf.RoundToInt(pieceDifference * 100);
     //}
-
-
 
     //public Move CreateMove(Tile tile, Tile move)
     //{
@@ -315,5 +332,16 @@ public class ChessAI : MonoBehaviour
         {
             return whiteScore;
         }
+    }
+    
+    public void FakeMove(Node previousNode, Node targetNode)
+    {
+        SwapFakePieces(targetNode);
+        previousNode = null;
+    }
+
+    public void SwapFakePieces(Node newNode)
+    {
+        previousNode = newNode;
     }
 }
