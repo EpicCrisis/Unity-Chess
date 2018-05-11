@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveWeights : MonoBehaviour
+public class MoveWeights
 {
     int[,] PawnBoardWeight = new int[,]
     {

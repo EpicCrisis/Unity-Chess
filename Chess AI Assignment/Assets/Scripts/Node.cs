@@ -40,6 +40,7 @@ public class Node : MonoBehaviour
 
     [SerializeField] private int moveCounter;
     [SerializeField] private int chessWeight;
+    [SerializeField] private int score;
 
     public void SetCurrentPos(int x, int y)
     {
@@ -1907,4 +1908,17 @@ public class Node : MonoBehaviour
         }
     }
 
+    public void SetScore(int value)
+    {
+        score = value;
+    }
+
+    public int GetScore
+    {
+        get
+        {
+            return score;
+        }
+    }
+    
 }

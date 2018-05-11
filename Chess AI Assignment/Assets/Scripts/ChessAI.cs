@@ -7,7 +7,7 @@ public class ChessAI : MonoBehaviour
     BoardManager board;
     PlayerInput player;
 
-    //MoveWeights moveWeights;
+    MoveWeights moveWeights = new MoveWeights();
 
     [SerializeField] private List<Node> whiteMovables = new List<Node>();
     [SerializeField] private List<Node> whiteActions = new List<Node>();
@@ -17,14 +17,15 @@ public class ChessAI : MonoBehaviour
 
     [SerializeField] private List<Node> chosenPieceMoves = new List<Node>();
 
-    [SerializeField] private Stack<Node> moveStack = new Stack<Node>();
-
     [SerializeField] int whiteScore = 0;
     [SerializeField] int blackScore = 0;
     [SerializeField] int totalScore = 0;
+    [SerializeField] int maxDepth = 4;
 
     [SerializeField] Node previousNode;
     [SerializeField] Node nodeToMove;
+    [SerializeField] Node bestMove;
+    [SerializeField] Node tempNode;
 
     void Awake()
     {
@@ -125,123 +126,166 @@ public class ChessAI : MonoBehaviour
         }
     }
 
-    //public int CalculateHeuristics(int depth, int alpha, int beta, bool max)
-    //{
-    //    GetBoardState();
+    public int CalculateMinMax(int depth, int alpha, int beta, bool max)
+    {
+        GetBoardState();
 
-    //    if (depth == 0)
-    //    {
-    //        return Evaluate();
-    //    }
-    //    if (max)
-    //    {
-    //        int score = -10000000;
+        if (depth == 0)
+        {
+            return Evaluate();
+        }
+        if (max)
+        {
+            int score = -1000000;
+            for (int i = 0; i < blackMovables.Count; ++i)
+            {
+                Node selectedNode = blackMovables[i];
 
-    //        for (int i = 0; i < blackMovables.Count; ++i)
-    //        {
-    //            Node selectedBlack = blackMovables[i];
+                for (int j = 0; j < selectedNode.GetNodesToCheck().Count; ++j)
+                {
+                    Node selectedAction = selectedNode.GetNodesToCheck()[i];
+                    tempNode = selectedAction;
 
-    //            for (int j = 0; j < selectedBlack.GetNodesToCheck().Count; ++j)
-    //            {
-    //                Node nextMove = selectedBlack.GetNodesToCheck()[j];
+                    DoFakeMove(selectedNode, selectedAction);
                     
-    //                FakeMove(selectedBlack, nextMove);
-                    
-    //                score = CalculateHeuristics(depth - 1, alpha, beta, false);
+                    score = CalculateMinMax(depth - 1, alpha, beta, false);
 
-    //                UndoFakeMove();
-    //            }
-    //        }
+                    UndoFakeMove(selectedNode, selectedAction, tempNode);
 
-    //        List<Node> nodeMoves = blackActions;
-    //        foreach (Node move in nodeMoves)
-    //        {
-    //            moveStack.Push(move);
+                    if (score > alpha)
+                    {
+                        selectedNode.SetScore(score);
+                        if (selectedNode.GetScore > selectedAction.GetScore && depth == maxDepth)
+                        {
+                            bestMove = selectedNode;
+                        }
+                        alpha = score;
+                    }
+                    if (score >= beta)
+                    {
+                        break;
+                    }
+                }
+            }
+            return alpha;
+        }
+        else
+        {
+            int score = 1000000;
+            for (int i = 0; i < whiteMovables.Count; ++i)
+            {
+                Node selectedNode = blackMovables[i];
 
-    //            FakeMove(previousNode, nodeToMove);
+                for (int j = 0; j < selectedNode.GetNodesToCheck().Count; ++j)
+                {
+                    Node selectedAction = selectedNode.GetNodesToCheck()[i];
+                    tempNode = selectedAction;
 
-    //            score = CalculateHeuristics(depth - 1, alpha, beta, false);
+                    DoFakeMove(selectedNode, selectedAction);
 
-    //            _UndoFakeMove();
+                    score = CalculateMinMax(depth - 1, alpha, beta, false);
 
-    //            if (score > alpha)
-    //            {
-    //                move.score = score;
-    //                if (move.score > bestMove.score && depth == maxDepth)
-    //                {
-    //                    bestMove = move;
-    //                }
-    //                alpha = score;
-    //            }
-    //            if (score >= beta)
-    //            {
-    //                break;
-    //            }
-    //        }
-    //        return alpha;
-    //    }
-    //    else
-    //    {
-    //        int score = 10000000;
-    //        List<Move> allMoves = _GetMoves(Piece.playerColor.WHITE);
-    //        foreach (Move move in allMoves)
-    //        {
-    //            moveStack.Push(move);
+                    UndoFakeMove(selectedNode, selectedAction, tempNode);
 
-    //            _DoFakeMove(move.firstPosition, move.secondPosition);
+                    if (score > alpha)
+                    {
+                        selectedNode.SetScore(score);
+                        if (selectedNode.GetScore > selectedAction.GetScore && depth == maxDepth)
+                        {
+                            bestMove = selectedNode;
+                        }
+                        alpha = score;
+                    }
+                    if (score >= beta)
+                    {
+                        break;
+                    }
+                }
+            }
+            return beta;
+        }
+    }
 
-    //            score = AB(depth - 1, alpha, beta, true);
+    int Evaluate()
+    {
+        float pieceDifference = 0;
+        float whiteWeight = 0;
+        float blackWeight = 0;
 
-    //            _UndoFakeMove();
+        for (int i = 0; i < whiteMovables.Count; ++i)
+        {
+            Node node = whiteMovables[i];
 
-    //            if (score < beta)
-    //            {
-    //                move.score = score;
-    //                beta = score;
-    //            }
-    //            if (score <= alpha)
-    //            {
-    //                break;
-    //            }
-    //        }
-    //        return beta;
-    //    }
-    //}
+            whiteWeight += moveWeights.GetBoardWeight(node.GetNodeType(), node.GetNodePosition(), Node.NodeTeam.WHITE);
+        }
+        for (int i = 0; i < blackMovables.Count; ++i)
+        {
+            Node node = blackMovables[i];
 
-    //public int Evaluate()
-    //{
-    //    float pieceDifference = 0;
-    //    float whiteWeight = 0;
-    //    float blackWeight = 0;
+            blackWeight += moveWeights.GetBoardWeight(node.GetNodeType(), node.GetNodePosition(), Node.NodeTeam.BLACK);
+        }
 
-    //    foreach (Node node in whiteMovables)
-    //    {
-    //        whiteWeight += moveWeights.GetBoardWeight(previousNode.GetNodeType(), previousNode.GetNodePosition(), Node.NodeTeam.WHITE);
-    //    }
-    //    foreach (Node node in blackMovables)
-    //    {
-    //        blackWeight += moveWeights.GetBoardWeight(previousNode.GetNodeType(), previousNode.GetNodePosition(), Node.NodeTeam.BLACK);
-    //    }
+        pieceDifference = (blackScore + (blackWeight / 100)) - (whiteScore + (whiteWeight / 100));
+        return Mathf.RoundToInt(pieceDifference * 100);
+    }
 
-    //    pieceDifference = (blackScore + (blackWeight / 100)) - (whiteScore + (whiteWeight / 100));
+    public void DoFakeMove(Node selectedNode, Node targetNode)
+    {
+        targetNode = selectedNode;
+        selectedNode = null;
+    }
 
-    //    return Mathf.RoundToInt(pieceDifference * 100);
-    //}
+    public void UndoFakeMove(Node selectedNode, Node targetNode, Node tempNode)
+    {
+        selectedNode = targetNode;
+        targetNode = tempNode;
+        tempNode = null;
+    }
 
-    //public Move CreateMove(Tile tile, Tile move)
-    //{
-    //    Move tempMove = new Move();
-    //    tempMove.firstPosition = tile;
-    //    tempMove.pieceMoved = tile.CurrentPiece;
-    //    tempMove.secondPosition = move;
+    List<Move> GetMoves(Node.NodeTeam nodeTeam)
+    {
+        List<Move> turnMove = new List<Move>();
+        List<Node> pieces = new List<Node>();
 
-    //    if (move.CurrentPiece != null)
-    //    {
-    //        tempMove.pieceKilled = move.CurrentPiece;
-    //    }
+        if (nodeTeam == Node.NodeTeam.BLACK)
+        {
+            pieces = blackMovables;
+        }
+        else
+        {
+            pieces = whiteMovables;
+        }
 
-    //    return tempMove;
-    //}
+        for (int i = 0; i < pieces.Count; ++i)
+        {
+            Node selected = pieces[i];
+
+            for (int j = 0; j < selected.GetNodesToCheck().Count; ++j)
+            {
+                Node action = selected.GetNodesToCheck()[j];
+                
+
+            }
+        }
+        return turnMove;
+    }
+
+    Move CreateMove(Node selectedNode, Node nodeToMove)
+    {
+        Move tempMove = new Move
+        {
+            firstPosition = selectedNode,
+            pieceMoved = selectedNode,
+            secondPosition = nodeToMove
+        };
+
+        if (nodeToMove != null)
+        {
+            tempMove.pieceKilled = nodeToMove;
+        }
+
+        return tempMove;
+    }
 
     public void GetBoardState()
     {
@@ -334,14 +378,4 @@ public class ChessAI : MonoBehaviour
         }
     }
     
-    public void FakeMove(Node previousNode, Node targetNode)
-    {
-        SwapFakePieces(targetNode);
-        previousNode = null;
-    }
-
-    public void SwapFakePieces(Node newNode)
-    {
-        previousNode = newNode;
-    }
 }

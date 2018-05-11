@@ -16,6 +16,8 @@ public class PlayerInput : MonoBehaviour
 
     [SerializeField] private int playerTurn = 1;
 
+    [SerializeField] Node aiNodeMove;
+
     BoardManager board;
     ChessAI chessAI;
     UIManager UIManager;
@@ -117,7 +119,8 @@ public class PlayerInput : MonoBehaviour
         }
         else if (playerTurn == 2)
         {
-            //Debug.Log("Auto player turn is active!!!");
+            Debug.Log("Auto player turn is active!!!");
+
             chessAI.GetAIMovables();
             chessAI.AIMakeAction();
 
